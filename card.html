@@ -1,4 +1,4 @@
-<!doctype HTML>
+<!DOCTYPE HTML>
 <html>
 <link rel="icon" href="data:;base64,iVBORw0KGgo=">
 <script src="js/aframe.min.js"></script>
@@ -71,11 +71,8 @@ AFRAME.registerComponent('registerevents', {
     <a-assets>
 		<img id="grid" src="images/border.png" />
 	</a-assets>
-    <a-assets>
-        <a-asset-item id="tree" src="models/tree.gltf"></a-asset-item>
-	</a-assets>
 
-    <a-marker type="pattern" url="data/kanji.patt" id="baseMarker" registerevents>
+    <a-marker type="pattern" url="data/LS.patt" id="baseMarker" registerevents>
     </a-marker>
     
     <!-- 
@@ -90,14 +87,6 @@ AFRAME.registerComponent('registerevents', {
                material="src:#grid; transparent: true; opacity: 0.90; side:double; visible:false;">
         </a-plane>
     </a-entity>
-
-    <a-marker type="pattern" url="data/kanji.patt">
-        <a-entity   position="0 0 0" 
-                    rotation="0 0 0"
-                    scale="0.10 0.10 0.10"
-                    gltf-model="#tree" >
-        </a-entity>
-    </a-marker>
         
     
     <a-entity camera></a-entity>
