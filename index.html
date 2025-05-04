@@ -76,6 +76,9 @@ AFRAME.registerComponent('registerevents', {
 	</a-assets>
 
     <a-marker type="pattern" url="data/kanji.patt" id="baseMarker" registerevents>
+        <a-box position="0 0.5 0" 
+            material="color: red; transparent: true; opacity: 0.50;">
+        </a-box>
     </a-marker>
     
     <!-- 
@@ -89,15 +92,13 @@ AFRAME.registerComponent('registerevents', {
                color = "green"
                material="src:#grid; transparent: true; opacity: 0.90; side:double; visible:false;">
         </a-plane>
-    </a-entity>
 
-    <a-marker type="pattern" url="data/kanji.patt">
         <a-entity   position="0 0 0" 
                     rotation="0 0 0"
                     scale="0.10 0.10 0.10"
                     gltf-model="#tree" >
         </a-entity>
-    </a-marker>
+    </a-entity>
         
     
     <a-entity camera></a-entity>
