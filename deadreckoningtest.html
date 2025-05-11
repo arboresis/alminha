@@ -1,0 +1,125 @@
+<!doctype HTML>
+<html>
+<link rel="icon" href="data:;base64,iVBORw0KGgo=">
+<script src="js/aframe.min.js"></script>
+<script src="js/aframe-ar.js"></script>
+<body style="margin: 0px; overflow: hidden;">
+
+<script>
+
+let markerVisible = false;
+let lastKnownPosition = new THREE.Vector3(0, 1, 0); // Initial position (1m above marker)
+let lastKnownRotation = new THREE.Quaternion(0, 0, 0, 1); // Initial rotation (no rotation)
+
+AFRAME.registerComponent('registerevents', {
+    init: function () {
+        let marker = this.el;
+        let follower = document.querySelector("#follower");
+        let followerPlane = document.querySelector("#followerPlane");
+
+        marker.addEventListener('markerFound', function() {
+            // When the marker is found, store the initial position and rotation.
+            if (follower.getAttribute("active") == "0") {
+                follower.setAttribute("active", "1");
+                followerPlane.setAttribute("material", "visible", "true");
+            }
+            markerVisible = true;
+
+            // Store marker's initial position, rotation, and scale
+            marker.object3D.getWorldPosition(lastKnownPosition);
+            marker.object3D.getWorldQuaternion(lastKnownRotation);
+        });
+
+        marker.addEventListener('markerLost', function() {
+            markerVisible = false;
+        });
+
+        this.p = new THREE.Vector3();
+        this.q = new THREE.Quaternion();
+        this.s = new THREE.Vector3();
+    },
+
+    tick: function (time, deltaTime) {
+        let follower = document.querySelector("#follower");
+        let followerPlane = document.querySelector("#followerPlane");
+
+        if (markerVisible) {
+            // If marker is visible, align with the marker as usual
+            let marker = this.el;
+            let lerpAmount = 0.5;
+
+            marker.object3D.getWorldPosition(this.p);
+            marker.object3D.getWorldQuaternion(this.q);
+            marker.object3D.getWorldScale(this.s);
+
+            follower.object3D.position.lerp(this.p, lerpAmount);
+            follower.object3D.quaternion.slerp(this.q, lerpAmount);
+            follower.object3D.scale.lerp(this.s, lerpAmount);
+
+            followerPlane.setAttribute("color", "green");
+        } else {
+            // If the marker is lost, use dead reckoning to estimate the position
+
+            let gyro = window.DeviceOrientationEvent && window.DeviceOrientationEvent.absolute ? window.orientation : 0;
+
+            // Apply some simple dead reckoning (this can be extended with more sensor data like accelerometer)
+            let movement = new THREE.Vector3(0, 0, 0); // Just placeholder for movement (would need real sensor data)
+            
+            // Use gyro or accelerometer to estimate movement, simple placeholder for now
+            movement.x += deltaTime * Math.sin(gyro * Math.PI / 180) * 0.05;  // Simulating some basic rotation-based movement
+            movement.z += deltaTime * Math.cos(gyro * Math.PI / 180) * 0.05;
+
+            // Update the position based on dead reckoning
+            lastKnownPosition.add(movement);
+
+            // Update position and rotation of the follower object
+            follower.object3D.position.set(lastKnownPosition.x, lastKnownPosition.y, lastKnownPosition.z);
+            follower.object3D.quaternion.set(lastKnownRotation.x, lastKnownRotation.y, lastKnownRotation.z, lastKnownRotation.w);
+            
+            followerPlane.setAttribute("color", "red");
+        }
+    }
+});
+
+</script>
+
+<a-scene embedded vr-mode-ui="enabled: false;" arjs="debugUIEnabled: false; detectionMode: mono_and_matrix; matrixCodeType: 3x3;">
+
+    <a-assets>
+        <img id="grid" src="images/border.png" />
+    </a-assets>
+    <a-assets>
+        <a-asset-item id="grave_test" src="models/grave_test.gltf"></a-asset-item>
+    </a-assets>
+
+    <a-marker
+        type="pattern"
+        url="data/qr_code.patt"
+        id="baseMarker"
+        size="0.085"
+        minVisibility="0.8"
+        minConfidence="0.8"
+        registerevents>
+    </a-marker>
+
+    <!-- Entity that follows the marker or uses dead reckoning -->
+    <a-entity id="follower" active="0">
+        <a-plane id="followerPlane"
+                 position="0 0 0"
+                 rotation="-90 0 0"
+                 color="green"
+                 material="src:#grid; transparent: true; opacity: 0.00; side:double; visible:false;">
+        </a-plane>
+
+        <a-entity position="0 1 0"
+                  rotation="0 0 0"
+                  scale="1 1 1"
+                  gltf-model="#grave_test">
+        </a-entity>
+    </a-entity>
+
+    <a-entity camera></a-entity>
+
+</a-scene>
+</body>
+</html>
