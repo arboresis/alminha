@@ -72,14 +72,23 @@ AFRAME.registerComponent('registerevents', {
 		<img id="grid" src="images/border.png" />
 	</a-assets>
     <a-assets>
-        <a-asset-item id="tree" src="models/tree.gltf"></a-asset-item>
+        <a-asset-item id="grave_test" src="models/grave_test.gltf"></a-asset-item>
 	</a-assets>
 
-    <a-marker type="pattern" url="data/qr_code.patt" id="baseMarker" registerevents>
-        <a-box position="0 0.5 0" 
-            material="color: red; transparent: true; opacity: 0.50;">
-        </a-box>
-    </a-marker>
+    <a-marker 
+    type="pattern" 
+    url="data/qr_code.patt" 
+    id="baseMarker" 
+    size="0.085" 
+    minVisibility="0.8" 
+    minConfidence="0.8"
+    registerevents>
+    
+    <a-box position="0 0.5 0" 
+        material="color: red; transparent: true; opacity: 0.50;">
+    </a-box>
+</a-marker>
+
     
     <!-- 
         this entity will move (lerp) towards the marker when visible;
@@ -93,10 +102,10 @@ AFRAME.registerComponent('registerevents', {
                material="src:#grid; transparent: true; opacity: 0.90; side:double; visible:false;">
         </a-plane>
 
-        <a-entity   position="0 0.5 0.5" 
+        <a-entity   position="0 0.5 0" 
                     rotation="0 0 0"
-                    scale="0.10 0.10 0.10"
-                    gltf-model="#tree" >
+                    scale="1 1 1"
+                    gltf-model="#grave_test" >
         </a-entity>
     </a-entity>
         
